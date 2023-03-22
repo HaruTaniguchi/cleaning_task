@@ -128,7 +128,7 @@ class ExeAction(smach.State):
         goal = APExecutorGoal()
         goal.action = userdata.cmd_in_action
         goal.data = userdata.cmd_in_data
-        print goal
+        print (goal)
         ac.send_goal(goal)
         ac.wait_for_result()
         result = ac.get_result().data
@@ -168,3 +168,5 @@ if __name__=='__main__':
                 ExeAction(),
                 transitions = {'action_success':'',
                                 'action_failure':''})
+
+    outcome = sm_top.execute()
