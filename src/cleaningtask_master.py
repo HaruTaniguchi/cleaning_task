@@ -66,6 +66,7 @@ class YesNo(smach.State):   #航のコピーから少し改変,まだ未完(ゴ�
     def __init__(self):
         smach.State.__init__(self,
                             outcomes = ['yes_no_success',
+                                        'yes_no_retry',
                                         'yes_no_failed'])
         self.yesno_srv = rospy.ServiceProxy('/yes_no', YesNo)
         self.grasp_srv = rospy.ServiceProxy('/recognition_to_grasping', RecognitionToGrasping)
@@ -78,11 +79,12 @@ class YesNo(smach.State):   #航のコピーから少し改変,まだ未完(ゴ�
                 if grasp_count >= 3: #####
                     self.tts_srv("/fd/grasp_failed")
                     #break
+                    return 'yes_no_failed'
                     
                 else:
                     self.tts_srv("/fd/grasp_retry")
-                grasp_count += 1
-                return 'yes_no_failed'
+                    grasp_count += 1
+                    return 'yes_no_retry'
                 
             else:
                 self.tts_srv('/fd/grasp_success')
@@ -95,11 +97,12 @@ class YesNo(smach.State):   #航のコピーから少し改変,まだ未完(ゴ�
                 if grasp_count >= 3: #####
                     self.tts_srv("/fd/grasp_failed")
                     #break
+                    return 'yes_no_failed'
                     
                 else:
                     self.tts_srv("/fd/grasp_retry")
-                grasp_count += 1
-                return 'yes_no_failed'
+                    grasp_count += 1
+                    return 'yes_no_retry'
 
             else:
                 self.tts_srv('/fd/grasp_success')
@@ -157,7 +160,8 @@ if __name__=='__main__':
                 'YESNO',
                 YesNo(),
                 transitions = {'yes_no_success':'EXE_ACTION',
-                                'yes_no_failed':'YESNO'})
+                                'yes_no_retry':'YESNO',
+                                'yes_no_failed':''})
 
         smach.StateMachine.add(
                 'EXE_ACTION',
